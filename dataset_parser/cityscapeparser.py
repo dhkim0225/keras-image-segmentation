@@ -24,16 +24,8 @@ for area in area_img_list:
     # print (image_list)
     for image_name in image_list:
         print (image_name)
-        gt_name = os.path.basename(image_name).replace('leftImg8bit', 'labelIds.png')
-        gt_name = os.path.join(area_gt_path, gt_name)
-        print (gt_name)
-        break
-    break
-# exit()
-for area in area_gt_list:
-    print (area)
-    gt_list = sorted(glob(os.path.join(area, '*labelIds.png')))
-    for gt_name in gt_list:
+        gt_name = os.path.basename(image_name).replace('leftImg8bit', 'gtFine_labelIds')
+        gt_name = os.path.join(area_gt_path, os.path.basename(area), gt_name)
         print (gt_name)
         break
     break
