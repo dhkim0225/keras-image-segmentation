@@ -16,7 +16,7 @@ for area in area_img_list:
     # print (image_list)
     for image_name in image_list:
         print (image_name)
-        gt_name = os.path.basename(image_name).replace('leftImg8bit', 'gtFine_color')
+        gt_name = os.path.basename(image_name).replace('leftImg8bit', 'labelIds.png')
         gt_name = os.path.join(area_gt_path, gt_name)
         print (gt_name)
         break
@@ -24,7 +24,7 @@ for area in area_img_list:
 # exit()
 for area in area_gt_list:
     print (area)
-    gt_list = sorted(glob(os.path.join(area, '*color.png')))
+    gt_list = sorted(glob(os.path.join(area, '*labelIds.png')))
     for gt_name in gt_list:
         print (gt_name)
         break
@@ -36,19 +36,17 @@ gt = cv2.imread(gt_name, 1)
 img = cv2.resize(img, (img.shape[1]/2, img.shape[0]/2))
 gt = cv2.resize(gt, (gt.shape[1]/2, gt.shape[0]/2), interpolation=cv2.INTER_NEAREST)
 
-# gt = gt[gt[:,:]==(128, 64, 128)]
-# gt = gt[]
-road_color = np.array([128, 64, 128], dtype=np.uint8)
-human_color = np.array([60, 20, 220], dtype=np.uint8)
-car_color = np.array([142, 0, 0], dtype=np.uint8)
-road = np.where(gt[:,:] == road_color, gt, np.array([0,0,0], dtype=np.uint8))
-car = np.where(gt[:,:] == car_color, gt, np.array([0,0,0], dtype=np.uint8))
-human = np.where(gt[:,:] == human_color, gt, np.array([0,0,0], dtype=np.uint8))
+road = np.where(gt == 7, gt, 0) 
+car = np.where(gt == 26, gt, 0)
+human = np.where(gt == 24, gt, 0)
 
-gt = road + human + car
+gt = road + car + human
 
 show = img
-show = cv2.addWeighted(img, 0.5, gt, 0.6, 0)
+gt_show = gt.astype(np.float32)*255/33
+gt_show = gt_show.astype(np.uint8)
+gt_show = cv2.applyColorMap(gt_show, cv2.COLORMAP_JET)
+show = cv2.addWeighted(img, 0.5, gt_show, 0.6, 0)
 
 cv2.imshow('gt', gt)
 cv2.imshow('show', show)
