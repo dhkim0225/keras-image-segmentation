@@ -11,13 +11,14 @@ area_gt_list = sorted(glob(area_gt_path+'*'))
 # print (area_list)
 
 def select_labels(gt):
-    human = np.where(gt == 24, 1, 0)
-    car = np.where(gt == 26, 2, 0)
-    road = np.where(gt == 7, 3, 0)
+    human = np.where(gt == 24, 10, 0)
+    car = np.where(gt == 26, 20, 0)
+    road = np.where(gt == 7, 30, 0)
 
     gt_new = road + car + human
     return gt_new
 
+start = cv2.getTickCount()
 for area in area_img_list:
     # print (area)
     image_list = sorted(glob(os.path.join(area,'*')))
@@ -35,14 +36,16 @@ for area in area_img_list:
 
         gt = select_labels(gt)
 
-        show = img
-        gt_show = gt.astype(np.float32)*255/33
-        gt_show = gt_show.astype(np.uint8)
-        gt_show = cv2.applyColorMap(gt_show, cv2.COLORMAP_JET)
-        show = cv2.addWeighted(img, 0.5, gt_show, 0.6, 0)
+        # show = img
+        # gt_show = gt.astype(np.float32)*255/33
+        # gt_show = gt_show.astype(np.uint8)
+        # gt_show = cv2.applyColorMap(gt_show, cv2.COLORMAP_JET)
+        # show = cv2.addWeighted(img, 0.5, gt_show, 0.6, 0)
 
         # cv2.imshow('gt', gt)
-        cv2.imshow('show', show)
-        key = cv2.waitKey()
-        if key == 27:
-            exit()
+        # cv2.imshow('show', show)
+        # key = cv2.waitKey(1)
+        # if key == 27:
+        #     exit()
+time = (cv2.getTickCount() - start)/cv2.getTickFrequency()
+print ('total time: %.3fs'%time)
