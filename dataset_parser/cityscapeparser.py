@@ -10,6 +10,14 @@ area_img_list = sorted(glob(area_img_path+'*'))
 area_gt_list = sorted(glob(area_gt_path+'*'))
 # print (area_list)
 
+def select_labels(gt):
+    human = np.where(gt == 24, 1, 0)
+    car = np.where(gt == 26, 2, 0)
+    road = np.where(gt == 7, 3, 0)
+
+    gt_new = road + car + human
+    return gt_new
+
 for area in area_img_list:
     print (area)
     image_list = sorted(glob(os.path.join(area,'*')))
@@ -36,11 +44,7 @@ gt = cv2.imread(gt_name, 1)
 img = cv2.resize(img, (img.shape[1]/2, img.shape[0]/2))
 gt = cv2.resize(gt, (gt.shape[1]/2, gt.shape[0]/2), interpolation=cv2.INTER_NEAREST)
 
-road = np.where(gt == 7, gt, 0) 
-car = np.where(gt == 26, gt, 0)
-human = np.where(gt == 24, gt, 0)
-
-gt = road + car + human
+gt = select_labels(gt)
 
 show = img
 gt_show = gt.astype(np.float32)*255/33
