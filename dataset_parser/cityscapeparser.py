@@ -4,8 +4,12 @@ from glob import glob
 import os
 import cv2
 
-area_img_path = '/Volumes/Samsung USB/dataset/cityscape/leftImg8bit/train/'
-area_gt_path = '/Volumes/Samsung USB/dataset/cityscape/gtFine/train/'
+### server
+root_path = '/run/media/tkwoo/myWorkspace/workspace/01.dataset/cityscape/'
+### mac
+# root_path = '/Volumes/Samsung USB/dataset/cityscape/'
+area_img_path = root_path+'leftImg8bit/train/'
+area_gt_path = root_path+'gtFine/train/'
 area_img_list = sorted(glob(area_img_path+'*'))
 area_gt_list = sorted(glob(area_gt_path+'*'))
 # print (area_list)
