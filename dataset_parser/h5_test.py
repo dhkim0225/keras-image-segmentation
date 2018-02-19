@@ -58,7 +58,15 @@ group = h5py_file.create_group('train')
 x_dset = group.create_dataset('x', shape=(num_data,), dtype=uint8_dt)
 y_dset = group.create_dataset('y', shape=(num_data,), dtype=uint8_dt)
 
-for idx in range(num_data):
-    x_img = cv2.imread(x_paths[i])
-    x_img = cv2.resize(x_img, fx=0.25, fy=0.25, interpolation=cv2.INTER_LINEAR)
-    
+for i in range(num_data):
+    x_img = cv2.imread(x_train_paths[i])
+    x_img = cv2.resize(x_img, None, fx=0.25, fy=0.25, interpolation=cv2.INTER_LINEAR)
+
+    cv2.imwrite('x_img.jpg', x_img)
+
+    x_read = open('x_img.jpg', 'rb').read()
+    x_img = np.reshape(x_img, (256*512*3,))
+    print (len(x_read), x_img.shape)
+    print (str(x_read[0]), x_img[0][0][0])
+
+    exit()
