@@ -124,10 +124,23 @@ def h5py_test():
     image_size = h5_in['train']['image'].attrs['size']
     label_size = h5_in['train']['label'].attrs['size']
 
-    
+    reshape_image_size = tuple(np.insert(image_size, 0, batch_size))
+    reshape_label_size = tuple(np.insert(label_size, 0, batch_size))
 
-    x_img = np.reshape(h5_image[0], tuple(image_size))
-    y_img = np.reshape(h5_label[0], tuple(label_size))
+    # print(h5_image[0:10].astype(type(h5_image[0])).dtype)
+    for i in range(10):
+        start = cv2.getTickCount()
+        new_data = np.array(h5_image[0:10].tolist()).shape
+        time = (cv2.getTickCount() - start) / cv2.getTickFrequency()*1000
+        print ('time: %.2fms'%time)
+
+    exit()
+
+    x_img = np.reshape(h5_image[0:batch_size], reshape_image_size)
+    y_img = np.reshape(h5_label[0:batch_size], reshape_image_size)
+
+    x_img = x_img[0]
+    y_img = y_img[0]
 
     y_img = (y_img.astype(np.float32)*255/33).astype(np.uint8)
     y_show = cv2.applyColorMap(y_img, cv2.COLORMAP_JET)
