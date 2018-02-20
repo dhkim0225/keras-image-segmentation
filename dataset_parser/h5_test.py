@@ -117,7 +117,6 @@ def h5py_test():
     h5_label = h5_in.get('/train/label')
 
     shuffle_indexes = shuffle(range(len(h5_image)))
-    print (shuffle_indexes[:10])
 
     batch_size = 10
 
@@ -129,19 +128,14 @@ def h5py_test():
 
     # print(h5_image[0:10].astype(type(h5_image[0])).dtype)
     
-    for idx in range(10):
-        start = cv2.getTickCount()
-        np_data = np.zeros((batch_size, np.prod(image_size)), dtype=np.uint8)
-        for i in range(10):
-            np_data[i] = h5_image[i]
-            # new_data = np.array(h5_image[0:10].tolist()).shape
-        time = (cv2.getTickCount() - start) / cv2.getTickFrequency()*1000
-        print ('time: %.2fms'%time)
+    # faster than reading image files
+    np_image_flatten = np.array(h5_image[0:batch_size].tolist())
+    np_label_flatten = np.array(h5_label[0:batch_size].tolist())
 
-    exit()
+    print (np_image_flatten.shape)
 
-    x_img = np.reshape(h5_image[0:batch_size], reshape_image_size)
-    y_img = np.reshape(h5_label[0:batch_size], reshape_image_size)
+    x_img = np.reshape(np_image_flatten, reshape_image_size)
+    y_img = np.reshape(np_label_flatten, reshape_label_size)
 
     x_img = x_img[0]
     y_img = y_img[0]
