@@ -128,9 +128,13 @@ def h5py_test():
     reshape_label_size = tuple(np.insert(label_size, 0, batch_size))
 
     # print(h5_image[0:10].astype(type(h5_image[0])).dtype)
-    for i in range(10):
+    
+    for idx in range(10):
         start = cv2.getTickCount()
-        new_data = np.array(h5_image[0:10].tolist()).shape
+        np_data = np.zeros((batch_size, np.prod(image_size)), dtype=np.uint8)
+        for i in range(10):
+            np_data[i] = h5_image[i]
+            # new_data = np.array(h5_image[0:10].tolist()).shape
         time = (cv2.getTickCount() - start) / cv2.getTickFrequency()*1000
         print ('time: %.2fms'%time)
 
