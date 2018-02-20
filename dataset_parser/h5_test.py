@@ -41,55 +41,69 @@ def get_data(mode):
     else:
         print("Please call get_data function with arg 'train', 'val', 'test'.")
 
-x_train_paths, y_train_paths = get_data('train')
+def write_data(h5py_file, mode, x_paths, y_paths):
+    num_data = len(x_paths)
 
+    uint8_dt = h5py.special_dtype(vlen=np.uint8)
+    string_dt = h5py.special_dtype(vlen=str)
 
-print ([os.path.basename(x_train_path) for x_train_path in x_train_paths[:10]])
-# print ([os.path.basename(x_train_path) for x_train_path in y_train_paths[:10]])
-print (len(x_train_paths))
+    group = h5py_file.create_group(mode)
+    h5_name = group.create_dataset('name', shape=(num_data,), dtype=string_dt)
+    h5_image = group.create_dataset('image', shape=(num_data,), dtype=uint8_dt)
+    h5_label = group.create_dataset('label', shape=(num_data,), dtype=uint8_dt)
 
-h5py_file = h5py.File(os.path.join(dir_path, 'data.h5'), 'w')
+    for i in range(num_data):
+        x_img = cv2.imread(x_paths[i])
+        y_img = cv2.imread(y_paths[i])
+        x_img = cv2.resize(x_img, None, fx=0.25, fy=0.25, interpolation=cv2.INTER_LINEAR)
+        y_img = cv2.resize(y_img, None, fx=0.25, fy=0.25, interpolation=cv2.INTER_NEAREST)
 
-num_data = len(x_train_paths)
+        # x_img = np.reshape(x_img, (256*512*3,))
+        # y_img = np.reshape(y_img, (256*512*3,))
 
-uint8_dt = h5py.special_dtype(vlen=np.uint8)
-string_dt = h5py.special_dtype(vlen=str)
+        h5_image[i] = x_img.flatten()
+        h5_label[i] = y_img.flatten()
+        # h5_name[i] = np.array(os.path.basename(x_train_path[i]))
+        h5_name[i] = os.path.basename(x_paths[i])
 
-group = h5py_file.create_group('train')
-h5_name = group.create_dataset('name', shape=(num_data,), dtype=string_dt)
-h5_image = group.create_dataset('image', shape=(num_data,), dtype=uint8_dt)
-h5_label = group.create_dataset('label', shape=(num_data,), dtype=uint8_dt)
+def make_h5py():
+    x_train_paths, y_train_paths = get_data('train')
+    x_val_paths, y_val_paths = get_data('val')
+    x_test_paths, y_test_paths = get_data('test')
 
-for i in range(num_data):
-    x_img = cv2.imread(x_train_paths[i])
-    y_img = cv2.imread(y_train_paths[i])
-    x_img = cv2.resize(x_img, None, fx=0.25, fy=0.25, interpolation=cv2.INTER_LINEAR)
-    y_img = cv2.resize(y_img, None, fx=0.25, fy=0.25, interpolation=cv2.INTER_NEAREST)
+    h5py_file = h5py.File(os.path.join(dir_path, 'data.h5'), 'w')
+    
+    start = cv2.getTickCount()
+    write_data(h5py_file, 'train', x_train_paths, y_train_paths)
+    time = (cv2.getTickCount()-start)/cv2.getTickFrequency()
+    print ('parsing train data, Time:%.3fs'%time)
 
-    # x_img = np.reshape(x_img, (256*512*3,))
-    # y_img = np.reshape(y_img, (256*512*3,))
+    start = cv2.getTickCount()
+    write_data(h5py_file, 'val', x_val_paths, y_val_paths)
+    time = (cv2.getTickCount()-start)/cv2.getTickFrequency()
+    print ('parsing val data, Time:%.3fs'%time)
 
-    h5_image[i] = x_img.flatten()
-    h5_label[i] = y_img.flatten()
-    # h5_name[i] = np.array(os.path.basename(x_train_path[i]))
-    h5_name[i] = os.path.basename(x_train_paths[i])
-    # print (h5_name[i])
-    # print (os.path.basename(x_train_paths[i]))
+    start = cv2.getTickCount()
+    write_data(h5py_file, 'test', x_test_paths, y_test_paths)
+    time = (cv2.getTickCount()-start)/cv2.getTickFrequency()
+    print ('parsing test data, Time:%.3fs'%time)
 
-    break
+def read_h5py_example():
+    h5_in = h5py.File(os.path.join(dir_path, 'data.h5'), 'r')
+    print (h5_in.keys())
+    print (h5_in['train']['image'].dtype)
+    print (h5_in['train']['image'][0].shape)
 
-h5_in = h5py.File(os.path.join(dir_path, 'data.h5'), 'r')
-print (h5_in.keys())
-print (h5_in['train']['image'].dtype)
-print (h5_in['train']['image'][0].shape)
-
-x_img = np.reshape(h5_in['train']['image'][0], (256,512,3))
-y_img = np.reshape(h5_in['train']['label'][0], (256,512,3))
-name = h5_in['train']['name'][0]
-print (name)
-y_img = (y_img.astype(np.float32)*255/33).astype(np.uint8)
-y_show = cv2.applyColorMap(y_img, cv2.COLORMAP_JET)
-show = cv2.addWeighted(x_img, 0.5, y_show, 0.5, 0)
-cv2.imshow("show", show)
-# cv2.imshow('y', y_show)
-cv2.waitKey()
+    x_img = np.reshape(h5_in['train']['image'][0], (256,512,3))
+    y_img = np.reshape(h5_in['train']['label'][0], (256,512,3))
+    name = h5_in['train']['name'][0]
+    print (name)
+    y_img = (y_img.astype(np.float32)*255/33).astype(np.uint8)
+    y_show = cv2.applyColorMap(y_img, cv2.COLORMAP_JET)
+    show = cv2.addWeighted(x_img, 0.5, y_show, 0.5, 0)
+    cv2.imshow("show", show)
+    cv2.waitKey()
+    
+if __name__=='__main__':
+    # make_h5py()
+    read_h5py_example()
