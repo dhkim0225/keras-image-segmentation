@@ -5,6 +5,8 @@ import os
 import numpy as np
 import cv2
 import argparse
+import random
+from sklearn.utils import shuffle
 
 # Save current python dir path
 dir_path = os.path.dirname(os.path.realpath('__file__'))
@@ -52,19 +54,20 @@ def write_data(h5py_file, mode, x_paths, y_paths):
     h5_image = group.create_dataset('image', shape=(num_data,), dtype=uint8_dt)
     h5_label = group.create_dataset('label', shape=(num_data,), dtype=uint8_dt)
 
+    h5_image.attrs['size'] = [256,512,3]
+    h5_label.attrs['size'] = [256,512,1]
+
     for i in range(num_data):
-        x_img = cv2.imread(x_paths[i])
-        y_img = cv2.imread(y_paths[i])
+        x_img = cv2.imread(x_paths[i], 1)
+        y_img = cv2.imread(y_paths[i], 0)
         x_img = cv2.resize(x_img, None, fx=0.25, fy=0.25, interpolation=cv2.INTER_LINEAR)
         y_img = cv2.resize(y_img, None, fx=0.25, fy=0.25, interpolation=cv2.INTER_NEAREST)
 
-        # x_img = np.reshape(x_img, (256*512*3,))
-        # y_img = np.reshape(y_img, (256*512*3,))
-
         h5_image[i] = x_img.flatten()
         h5_label[i] = y_img.flatten()
-        # h5_name[i] = np.array(os.path.basename(x_train_path[i]))
         h5_name[i] = os.path.basename(x_paths[i])
+
+        # break
 
 def make_h5py():
     x_train_paths, y_train_paths = get_data('train')
@@ -94,8 +97,11 @@ def read_h5py_example():
     print (h5_in['train']['image'].dtype)
     print (h5_in['train']['image'][0].shape)
 
-    x_img = np.reshape(h5_in['train']['image'][0], (256,512,3))
-    y_img = np.reshape(h5_in['train']['label'][0], (256,512,3))
+    image_size = h5_in['train']['image'].attrs['size']
+    label_size = h5_in['train']['label'].attrs['size']
+
+    x_img = np.reshape(h5_in['train']['image'][0], tuple(image_size))
+    y_img = np.reshape(h5_in['train']['label'][0], tuple(label_size))
     name = h5_in['train']['name'][0]
     print (name)
     y_img = (y_img.astype(np.float32)*255/33).astype(np.uint8)
@@ -103,7 +109,36 @@ def read_h5py_example():
     show = cv2.addWeighted(x_img, 0.5, y_show, 0.5, 0)
     cv2.imshow("show", show)
     cv2.waitKey()
+
+def h5py_test():
+    h5_in = h5py.File(os.path.join(dir_path, 'cityscape.h5'), 'r')
+    h5_name = h5_in.get('/train/name')
+    h5_image = h5_in.get('/train/image')
+    h5_label = h5_in.get('/train/label')
+
+    shuffle_indexes = shuffle(range(len(h5_image)))
+    print (shuffle_indexes[:10])
+
+    batch_size = 10
+
+    image_size = h5_in['train']['image'].attrs['size']
+    label_size = h5_in['train']['label'].attrs['size']
+
+    
+
+    x_img = np.reshape(h5_image[0], tuple(image_size))
+    y_img = np.reshape(h5_label[0], tuple(label_size))
+
+    y_img = (y_img.astype(np.float32)*255/33).astype(np.uint8)
+    y_show = cv2.applyColorMap(y_img, cv2.COLORMAP_JET)
+    show = cv2.addWeighted(x_img, 0.5, y_show, 0.5, 0)
+    cv2.imshow("show", show)
+    cv2.waitKey()
+    # print (h5_image.shape)
+    # print (type(h5_image))
+    # print (type(h5_image[0]))
     
 if __name__=='__main__':
-    # make_h5py()
-    read_h5py_example()
+    # make_h5py() # cityscape -> 2.5GB h5 file
+    # read_h5py_example()
+    h5py_test()
