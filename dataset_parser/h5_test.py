@@ -53,20 +53,43 @@ h5py_file = h5py.File(os.path.join(dir_path, 'data.h5'), 'w')
 num_data = len(x_train_paths)
 
 uint8_dt = h5py.special_dtype(vlen=np.uint8)
+string_dt = h5py.special_dtype(vlen=str)
 
 group = h5py_file.create_group('train')
-x_dset = group.create_dataset('x', shape=(num_data,), dtype=uint8_dt)
-y_dset = group.create_dataset('y', shape=(num_data,), dtype=uint8_dt)
+h5_name = group.create_dataset('name', shape=(num_data,), dtype=string_dt)
+h5_image = group.create_dataset('image', shape=(num_data,), dtype=uint8_dt)
+h5_label = group.create_dataset('label', shape=(num_data,), dtype=uint8_dt)
 
 for i in range(num_data):
     x_img = cv2.imread(x_train_paths[i])
+    y_img = cv2.imread(y_train_paths[i])
     x_img = cv2.resize(x_img, None, fx=0.25, fy=0.25, interpolation=cv2.INTER_LINEAR)
+    y_img = cv2.resize(y_img, None, fx=0.25, fy=0.25, interpolation=cv2.INTER_NEAREST)
 
-    cv2.imwrite('x_img.jpg', x_img)
+    # x_img = np.reshape(x_img, (256*512*3,))
+    # y_img = np.reshape(y_img, (256*512*3,))
 
-    x_read = open('x_img.jpg', 'rb').read()
-    x_img = np.reshape(x_img, (256*512*3,))
-    print (len(x_read), x_img.shape)
-    print (str(x_read[0]), x_img[0][0][0])
+    h5_image[i] = x_img.flatten()
+    h5_label[i] = y_img.flatten()
+    # h5_name[i] = np.array(os.path.basename(x_train_path[i]))
+    h5_name[i] = os.path.basename(x_train_paths[i])
+    # print (h5_name[i])
+    # print (os.path.basename(x_train_paths[i]))
 
-    exit()
+    break
+
+h5_in = h5py.File(os.path.join(dir_path, 'data.h5'), 'r')
+print (h5_in.keys())
+print (h5_in['train']['image'].dtype)
+print (h5_in['train']['image'][0].shape)
+
+x_img = np.reshape(h5_in['train']['image'][0], (256,512,3))
+y_img = np.reshape(h5_in['train']['label'][0], (256,512,3))
+name = h5_in['train']['name'][0]
+print (name)
+y_img = (y_img.astype(np.float32)*255/33).astype(np.uint8)
+y_show = cv2.applyColorMap(y_img, cv2.COLORMAP_JET)
+show = cv2.addWeighted(x_img, 0.5, y_show, 0.5, 0)
+cv2.imshow("show", show)
+# cv2.imshow('y', y_show)
+cv2.waitKey()
