@@ -139,7 +139,17 @@ def h5py_test():
     x_img = np.reshape(np_image_flatten, reshape_image_size)
     y_img = np.reshape(np_label_flatten, reshape_label_size)
 
-    datagen_args = dict(featurewise_center=False,  # set input mean to 0 over the dataset
+    # def preprocessor(np_data):
+    #     print (np_data.shape)
+    #     np_data = np.array(np_data.tolist())
+    #     print (np_data.shape)
+    #     exit()
+    #     np_data = np.reshape(np_data, (10, 256, 512, -1))
+    #     return np_data
+
+    datagen_args = dict(
+                # preprocessing_function=preprocessor,
+                featurewise_center=False,  # set input mean to 0 over the dataset
                 samplewise_center=False,  # set each sample mean to 0
                 featurewise_std_normalization=False,  # divide inputs by std of the dataset
                 samplewise_std_normalization=False,  # divide each input by its std
@@ -159,8 +169,8 @@ def h5py_test():
     np_y = y_img.astype(np.float32)
 
     seed = random.randrange(1, 1000)
-    image_datagen.fit(np_x, augment=True, seed=seed)
-    mask_datagen.fit(np_y, augment=True, seed=seed)
+    # image_datagen.fit(np_x, augment=True, seed=seed)
+    # mask_datagen.fit(np_y, augment=True, seed=seed)
 
     img_gen = image_datagen.flow(np_x, batch_size=10, seed=seed)
     mask_gen = mask_datagen.flow(np_y, batch_size=10, seed=seed)
