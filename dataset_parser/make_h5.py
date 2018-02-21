@@ -18,7 +18,7 @@ img_folder_path = args.path
 gt_folder_path = args.gtpath
 
 # Use only 3 classes.
-labels = ['background', 'person', 'car', 'road']
+# labels = ['background', 'person', 'car', 'road']
 
 
 # Reads paths from cityscape data.
@@ -53,31 +53,22 @@ def write_data(h5py_file, mode, x_paths, y_paths):
 
     # Make group and data set.
     group = h5py_file.create_group(mode)
-    x_dset = group.create_dataset('x', shape=(num_data,), dtype=uint8_dt)
-    y_dset = group.create_dataset('y', shape=(num_data,), dtype=uint8_dt)
+    x_dset = group.create_dataset('x', shape=(num_data, ), dtype=uint8_dt)
+    y_dset = group.create_dataset('y', shape=(num_data, ), dtype=uint8_dt)
 
     for i in range(num_data):
         # Read image and resize
         x_img = cv2.imread(x_paths[i])
         x_img = cv2.resize(x_img, None, fx=0.25, fy=0.25, interpolation=cv2.INTER_CUBIC)
-        cv2.imwrite('x_img.jpg', x_img)
+        x_img = cv2.cvtColor(x_img, cv2.COLOR_BGR2RGB)
 
         y_img = cv2.imread(y_paths[i])
         y_img = cv2.resize(y_img, None, fx=0.25, fy=0.25, interpolation=cv2.INTER_NEAREST)
         y_img = y_img[:, :, 0]
-        cv2.imwrite('y_img.jpg', y_img)
 
-        # Read binary image.
-        x_img = open('x_img.jpg', 'rb').read()
-        y_img = open('y_img.jpg', 'rb').read()
+        x_dset[i] = x_img.flatten()
+        y_dset[i] = y_img.flatten()
 
-        # Write data.
-        x_dset[i] = np.frombuffer(x_img, dtype='uint8')
-        y_dset[i] = np.frombuffer(y_img, dtype='uint8')
-
-    os.remove('x_img.jpg')
-    os.remove('y_img.jpg')
-    
 
 # Make h5 file.
 def make_h5py():
