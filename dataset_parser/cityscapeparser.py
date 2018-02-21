@@ -4,8 +4,12 @@ from glob import glob
 import os
 import cv2
 
-area_img_path = '/Volumes/Samsung USB/dataset/cityscape/leftImg8bit/train/'
-area_gt_path = '/Volumes/Samsung USB/dataset/cityscape/gtFine/train/'
+### server
+root_path = '/run/media/tkwoo/myWorkspace/workspace/01.dataset/cityscape/'
+### mac
+# root_path = '/Volumes/Samsung USB/dataset/cityscape/'
+area_img_path = root_path+'leftImg8bit/train/'
+area_gt_path = root_path+'gtFine/train/'
 area_img_list = sorted(glob(area_img_path+'*'))
 area_gt_list = sorted(glob(area_gt_path+'*'))
 # print (area_list)
@@ -27,9 +31,9 @@ for area in area_img_list:
         gt_name = os.path.basename(image_name).replace('leftImg8bit', 'gtFine_labelIds')
         gt_name = os.path.join(area_gt_path, os.path.basename(area), gt_name)
         print (os.path.basename(image_name))
-
+        
         img = cv2.imread(image_name, 1)
-        gt = cv2.imread(gt_name, 1)
+        gt = cv2.imread(gt_name, 0)
 
         img = cv2.resize(img, (img.shape[1]/2, img.shape[0]/2))
         gt = cv2.resize(gt, (gt.shape[1]/2, gt.shape[0]/2), interpolation=cv2.INTER_NEAREST)
@@ -46,6 +50,6 @@ for area in area_img_list:
         # cv2.imshow('show', show)
         # key = cv2.waitKey(1)
         # if key == 27:
-        #     exit()
+        exit()
 time = (cv2.getTickCount() - start)/cv2.getTickFrequency()
 print ('total time: %.3fs'%time)
