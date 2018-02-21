@@ -56,10 +56,10 @@ def get_result_map(y_img):
     road = (y_img == 7)
     background = np.logical_not(person + car + road)
 
-    result_map[:, :, 0] = np.where(background, 255, 0)
-    result_map[:, :, 1] = np.where(person, 255, 0)
-    result_map[:, :, 2] = np.where(car, 255, 0)
-    result_map[:, :, 3] = np.where(road, 255, 0)
+    result_map[:, :, 0] = np.where(background, 1, 0)
+    result_map[:, :, 1] = np.where(person, 1, 0)
+    result_map[:, :, 2] = np.where(car, 1, 0)
+    result_map[:, :, 3] = np.where(road, 1, 0)
 
     return result_map
 
