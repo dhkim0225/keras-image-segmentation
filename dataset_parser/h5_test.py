@@ -130,6 +130,13 @@ def h5py_test():
 
     # print(h5_image[0:10].astype(type(h5_image[0])).dtype)
     
+    print (h5_image[:10])
+    print ('shape:',h5_image[:10].shape)
+    print ('dtype:',h5_image[:10].dtype)
+    print ('type of element:',type(h5_image[:10][0]))
+    
+    exit()
+
     # faster than reading image files
     x_img = np.array(h5_image[:].tolist())
     y_img = np.array(h5_label[:].tolist())
