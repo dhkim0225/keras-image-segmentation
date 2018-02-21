@@ -120,35 +120,26 @@ def h5py_test():
 
     shuffle_indexes = shuffle(range(len(h5_image)))
 
-    batch_size = 10
+    batch_size = 32
 
     image_size = h5_in['train']['image'].attrs['size']
     label_size = h5_in['train']['label'].attrs['size']
 
-    reshape_image_size = tuple(np.insert(image_size, 0, batch_size))
-    reshape_label_size = tuple(np.insert(label_size, 0, batch_size))
+    reshape_image_size = tuple(np.insert(image_size, 0, len(h5_image[:])))
+    reshape_label_size = tuple(np.insert(label_size, 0, len(h5_label[:])))
 
     # print(h5_image[0:10].astype(type(h5_image[0])).dtype)
     
     # faster than reading image files
-    np_image_flatten = np.array(h5_image[0:batch_size].tolist())
-    np_label_flatten = np.array(h5_label[0:batch_size].tolist())
+    x_img = np.array(h5_image[:].tolist())
+    y_img = np.array(h5_label[:].tolist())
 
-    print (np_image_flatten.shape)
+    print (x_img.shape)
 
-    x_img = np.reshape(np_image_flatten, reshape_image_size)
-    y_img = np.reshape(np_label_flatten, reshape_label_size)
-
-    # def preprocessor(np_data):
-    #     print (np_data.shape)
-    #     np_data = np.array(np_data.tolist())
-    #     print (np_data.shape)
-    #     exit()
-    #     np_data = np.reshape(np_data, (10, 256, 512, -1))
-    #     return np_data
+    x_img = np.reshape(x_img, reshape_image_size)
+    y_img = np.reshape(y_img, reshape_label_size)
 
     datagen_args = dict(
-                # preprocessing_function=preprocessor,
                 featurewise_center=False,  # set input mean to 0 over the dataset
                 samplewise_center=False,  # set each sample mean to 0
                 featurewise_std_normalization=False,  # divide inputs by std of the dataset
@@ -165,37 +156,44 @@ def h5py_test():
     image_datagen = ImageDataGenerator(**datagen_args)
     mask_datagen = ImageDataGenerator(**datagen_args)
 
-    np_x = x_img.astype(np.float32)
-    np_y = y_img.astype(np.float32)
+    x_img = x_img.astype(np.float32)
+    y_img = y_img.astype(np.float32)
 
     seed = random.randrange(1, 1000)
     # image_datagen.fit(np_x, augment=True, seed=seed)
     # mask_datagen.fit(np_y, augment=True, seed=seed)
-
-    img_gen = image_datagen.flow(np_x, batch_size=10, seed=seed)
-    mask_gen = mask_datagen.flow(np_y, batch_size=10, seed=seed)
+    start = cv2.getTickCount()
+    img_gen = image_datagen.flow(x_img, batch_size=32, shuffle=True, seed=seed)
+    mask_gen = mask_datagen.flow(y_img, batch_size=32, shuffle=True, seed=seed)
+    time = (cv2.getTickCount() - start) / cv2.getTickFrequency() * 1000
+    print ('flow time : %.2f ms'%time)
     
+    start = cv2.getTickCount()
+
     for img, label in itertools.izip(img_gen, mask_gen):
+        
         img = img.astype(np.uint8)
         label = label.astype(np.uint8)
         cv2.imshow('temp', img[0])
         cv2.imshow('label', label[0])
-        key = cv2.waitKey()
+        key = cv2.waitKey(1)
         if key == 27:
             break
+        time = (cv2.getTickCount() - start) / cv2.getTickFrequency() * 1000
+        print ('read time : %.2f ms'%time)
     exit()
 
-    x_img = x_img[0]
-    y_img = y_img[0]
+    # x_img = x_img[0]
+    # y_img = y_img[0]
 
-    y_img = (y_img.astype(np.float32)*255/33).astype(np.uint8)
-    y_show = cv2.applyColorMap(y_img, cv2.COLORMAP_JET)
-    show = cv2.addWeighted(x_img, 0.5, y_show, 0.5, 0)
-    cv2.imshow("show", show)
-    cv2.waitKey()
-    # print (h5_image.shape)
-    # print (type(h5_image))
-    # print (type(h5_image[0]))
+    # y_img = (y_img.astype(np.float32)*255/33).astype(np.uint8)
+    # y_show = cv2.applyColorMap(y_img, cv2.COLORMAP_JET)
+    # show = cv2.addWeighted(x_img, 0.5, y_show, 0.5, 0)
+    # cv2.imshow("show", show)
+    # cv2.waitKey()
+    # # print (h5_image.shape)
+    # # print (type(h5_image))
+    # # print (type(h5_image[0]))
     
 if __name__=='__main__':
     # make_h5py() # cityscape -> 2.5GB h5 file
