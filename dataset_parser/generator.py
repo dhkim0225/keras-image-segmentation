@@ -47,8 +47,9 @@ def get_data_gen_args(mode):
 
 
 # One hot encoding for y_img.
-def get_result_map(y_img):
-    result_map = np.zeros((256, 512, 4))
+def get_result_map(b_size, y_img):
+    y_img = np.squeeze(y_img, axis=3)
+    result_map = np.zeros((b_size, 256, 512, 4))
 
     # For np.where calculation.
     person = (y_img == 24)
@@ -56,10 +57,10 @@ def get_result_map(y_img):
     road = (y_img == 7)
     background = np.logical_not(person + car + road)
 
-    result_map[:, :, 0] = np.where(background, 1, 0)
-    result_map[:, :, 1] = np.where(person, 1, 0)
-    result_map[:, :, 2] = np.where(car, 1, 0)
-    result_map[:, :, 3] = np.where(road, 1, 0)
+    result_map[:, :, :, 0] = np.where(background, 1, 0)
+    result_map[:, :, :, 1] = np.where(person, 1, 0)
+    result_map[:, :, :, 2] = np.where(car, 1, 0)
+    result_map[:, :, :, 3] = np.where(road, 1, 0)
 
     return result_map
 
@@ -86,8 +87,7 @@ def data_generator(b_size, mode):
             idx = shuffled_idx[i]
 
             x.append(x_imgs[idx].reshape((256, 512, 3)))
-            y_img = y_imgs[idx].reshape((256, 512))
-            y.append(get_result_map(y_img))
+            y.append(y_imgs[idx].reshape((256, 512, 1)))
 
             if len(x) == b_size:
                 # Adapt ImageDataGenerator flow method for data augmentation.
@@ -104,7 +104,8 @@ def data_generator(b_size, mode):
                 # Finally, yield x, y data.
                 x_result, _ = next(x_tmp_gen)
                 y_result, _ = next(y_tmp_gen)
-                yield x_result, y_result
+
+                yield x_result, get_result_map(b_size, y_result)
 
                 x.clear()
                 y.clear()
