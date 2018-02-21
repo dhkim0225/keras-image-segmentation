@@ -6,7 +6,9 @@ import numpy as np
 import cv2
 import argparse
 import random
+import itertools
 from sklearn.utils import shuffle
+from keras.preprocessing.image import ImageDataGenerator
 
 # Save current python dir path
 dir_path = os.path.dirname(os.path.realpath('__file__'))
@@ -112,9 +114,9 @@ def read_h5py_example():
 
 def h5py_test():
     h5_in = h5py.File(os.path.join(dir_path, 'cityscape.h5'), 'r')
-    h5_name = h5_in.get('/train/name')
-    h5_image = h5_in.get('/train/image')
-    h5_label = h5_in.get('/train/label')
+    h5_name = h5_in['train']['name'] #.get('/train/name')
+    h5_image = h5_in['train']['image'] #.get('/train/image')
+    h5_label = h5_in['train']['label'] #.get('/train/label')
 
     shuffle_indexes = shuffle(range(len(h5_image)))
 
@@ -136,6 +138,42 @@ def h5py_test():
 
     x_img = np.reshape(np_image_flatten, reshape_image_size)
     y_img = np.reshape(np_label_flatten, reshape_label_size)
+
+    datagen_args = dict(featurewise_center=False,  # set input mean to 0 over the dataset
+                samplewise_center=False,  # set each sample mean to 0
+                featurewise_std_normalization=False,  # divide inputs by std of the dataset
+                samplewise_std_normalization=False,  # divide each input by its std
+                zca_whitening=False,  # apply ZCA whitening
+                rotation_range=10,  # randomly rotate images in the range (degrees, 0 to 180)
+                width_shift_range=0.1,  # randomly shift images horizontally (fraction of total width)
+                height_shift_range=0.1,  # randomly shift images vertically (fraction of total height)
+                fill_mode='constant',
+                # cval=0.,
+                horizontal_flip=False,  # randomly flip images
+                vertical_flip=False)  # randomly flip images
+
+    image_datagen = ImageDataGenerator(**datagen_args)
+    mask_datagen = ImageDataGenerator(**datagen_args)
+
+    np_x = x_img.astype(np.float32)
+    np_y = y_img.astype(np.float32)
+
+    seed = random.randrange(1, 1000)
+    image_datagen.fit(np_x, augment=True, seed=seed)
+    mask_datagen.fit(np_y, augment=True, seed=seed)
+
+    img_gen = image_datagen.flow(np_x, batch_size=10, seed=seed)
+    mask_gen = mask_datagen.flow(np_y, batch_size=10, seed=seed)
+    
+    for img, label in itertools.izip(img_gen, mask_gen):
+        img = img.astype(np.uint8)
+        label = label.astype(np.uint8)
+        cv2.imshow('temp', img[0])
+        cv2.imshow('label', label[0])
+        key = cv2.waitKey()
+        if key == 27:
+            break
+    exit()
 
     x_img = x_img[0]
     y_img = y_img[0]
