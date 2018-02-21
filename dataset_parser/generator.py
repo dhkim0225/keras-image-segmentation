@@ -78,11 +78,11 @@ def data_generator(b_size, mode):
     # random index for random data access.
     d_size = x_imgs.shape[0]
     shuffled_idx = list(range(d_size))
-    random.shuffle(shuffled_idx)
 
     x = []
     y = []
     while True:
+        random.shuffle(shuffled_idx)
         for i in range(d_size):
             idx = shuffled_idx[i]
 
