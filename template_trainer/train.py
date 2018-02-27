@@ -19,6 +19,14 @@ import callbacks
 class TrainModel:
     def __init__(self, flag):
         self.flag = flag
+    
+    def select_labels(self, gt):
+        human = np.where(gt == 24, 10, 0)
+        car = np.where(gt == 26, 20, 0)
+        road = np.where(gt == 7, 30, 0)
+
+        gt_new = road + car + human
+        return gt_new
 
     def train_generator(self, image_generator, mask_generator):
         cv2.namedWindow('show', 0)
@@ -26,6 +34,7 @@ class TrainModel:
         while True:
             image = next(image_generator)[0].astype(np.uint8)
             mask = next(mask_generator)[0]
+            mask = self.select_labels(mask)
             print (image.shape)
             print (mask.shape)
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
@@ -58,7 +67,7 @@ class TrainModel:
                 featurewise_std_normalization=False,  # divide inputs by std of the dataset
                 samplewise_std_normalization=False,  # divide each input by its std
                 zca_whitening=False,  # apply ZCA whitening
-                rotation_range=5,  # randomly rotate images in the range (degrees, 0 to 180)
+                rotation_range=10,  # randomly rotate images in the range (degrees, 0 to 180)
                 width_shift_range=0.05,  # randomly shift images horizontally (fraction of total width)
                 height_shift_range=0.05,  # randomly shift images vertically (fraction of total height)
                 fill_mode='constant',
