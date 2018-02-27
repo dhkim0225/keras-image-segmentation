@@ -7,6 +7,7 @@ import cv2
 import argparse
 import random
 import itertools
+from tqdm import tqdm, trange
 from sklearn.utils import shuffle
 from keras.preprocessing.image import ImageDataGenerator
 
@@ -201,8 +202,41 @@ def h5py_test():
     # # print (h5_image.shape)
     # # print (type(h5_image))
     # # print (type(h5_image[0]))
-    
+
+def image_copy_to_dir(mode, x_paths, y_paths):
+    target_path = '/run/media/tkwoo/myWorkspace/workspace/01.dataset/03.Mask_data/cityscape'
+    target_path = os.path.join(target_path, mode)
+
+    for idx in trange(len(x_paths)):
+        image = cv2.imread(x_paths[idx], 1)
+        mask = cv2.imread(y_paths[idx], 0)
+
+        image = cv2.resize(image, None, fx=0.25, fy=0.25, interpolation=cv2.INTER_LINEAR)
+        mask = cv2.resize(mask, None, fx=0.25, fy=0.25, interpolation=cv2.INTER_NEAREST)
+
+        cv2.imwrite(os.path.join(target_path, 'image', os.path.basename(x_paths[idx])), image)
+        cv2.imwrite(os.path.join(target_path, 'mask', os.path.basename(y_paths[idx])), mask)
+
+        # show = image.copy()
+        # mask = (mask.astype(np.float32)*255/33).astype(np.uint8)
+        # mask_color = cv2.applyColorMap(mask, cv2.COLORMAP_JET)
+        # show = cv2.addWeighted(show, 0.5, mask_color, 0.5, 0.0)
+        # cv2.imshow('show', show)
+        # key = cv2.waitKey(1)
+        # if key == 27:
+        #     return
+
+def image_collection():
+    x_train_paths, y_train_paths = get_data('train')
+    x_val_paths, y_val_paths = get_data('val')
+    x_test_paths, y_test_paths = get_data('test')
+
+    image_copy_to_dir('train', x_train_paths, y_train_paths)
+    image_copy_to_dir('val', x_val_paths, y_val_paths)
+    image_copy_to_dir('test', x_test_paths, y_test_paths)
+
 if __name__=='__main__':
     # make_h5py() # cityscape -> 2.5GB h5 file
     # read_h5py_example()
-    h5py_test()
+    # h5py_test()
+    image_collection()
