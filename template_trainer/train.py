@@ -21,32 +21,45 @@ class TrainModel:
         self.flag = flag
     
     def select_labels(self, gt):
-        human = np.where(gt == 24, 10, 0)
-        car = np.where(gt == 26, 20, 0)
-        road = np.where(gt == 7, 30, 0)
+        human = np.where(gt==24,10,0) + np.where(gt==25,10,0)
+        car = np.where(gt==26,20,0) + np.where(gt==27,20,0) + np.where(gt==28,20,0)
+        road = np.where(gt==7,30,0) #+ np.where(gt==8,30,0)
 
         gt_new = road + car + human
         return gt_new
+    
+    def make_regressor_label(self, gt):
+        human = np.where(gt==24,255,0) + np.where(gt==25,255,0)
+        car = np.where(gt==26,255,0) + np.where(gt==27,255,0) + np.where(gt==28,20,0)
+        road = np.where(gt==7,255,0) #+ np.where(gt==8,1,0)
+        label = np.concatenate((human, car, road), axis=-1)
+        return label
 
     def train_generator(self, image_generator, mask_generator):
-        cv2.namedWindow('show', 0)
-        cv2.resizeWindow('show', 1280, 640)
+        # cv2.namedWindow('show', 0)
+        # cv2.resizeWindow('show', 1280, 640)
         while True:
-            image = next(image_generator)[0].astype(np.uint8)
-            mask = next(mask_generator)[0]
-            mask = self.select_labels(mask)
-            print (image.shape)
-            print (mask.shape)
-            image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-            mask = (mask.astype(np.float32)*255/33).astype(np.uint8)
-            mask_color = cv2.applyColorMap(mask, cv2.COLORMAP_JET)
-            print (mask_color.shape)
-            show = cv2.addWeighted(image, 0.5, mask_color, 0.5, 0.0)
-            cv2.imshow("show", show)
-            key = cv2.waitKey()
-            if key == 27:
-                exit()
-            # yield(next(image_generator), next(mask_generator))
+            image = next(image_generator)
+            mask = next(mask_generator)
+            label = self.make_regressor_label(mask).astype(np.float32)
+            # print (image.dtype, label.dtype)
+            # print (image.shape, label.shape)
+            # exit()
+            # cv2.imshow('show', image[0].astype(np.uint8))
+            # cv2.imshow('label', label[0].astype(np.uint8))
+            # mask = self.select_labels(mask)
+            # print (image.shape)
+            # print (mask.shape)
+            # image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+            # mask = (mask.astype(np.float32)*255/33).astype(np.uint8)
+            # mask_color = cv2.applyColorMap(mask, cv2.COLORMAP_JET)
+            # print (mask_color.shape)
+            # show = cv2.addWeighted(image, 0.5, mask_color, 0.5, 0.0)
+            # cv2.imshow("show", show)
+            # key = cv2.waitKey()
+            # if key == 27:
+            #     exit()
+            yield (image, label)
 
     def lr_step_decay(self, epoch):
         init_lr = self.flag.initial_learning_rate
@@ -90,9 +103,8 @@ class TrainModel:
                     target_size=(self.flag.image_height, self.flag.image_width),
                     color_mode='grayscale')
 
-        self.train_generator(image_generator, mask_generator)
-        print ('hihi')
-        exit()
+        # self.train_generator(image_generator, mask_generator)
+        # exit()
 
         config = tf.ConfigProto()
         # config.gpu_options.per_process_gpu_memory_fraction = 0.9
@@ -111,7 +123,7 @@ class TrainModel:
         vis = callbacks.trainCheck(self.flag)
         model_checkpoint = ModelCheckpoint(
                     os.path.join(self.flag.ckpt_dir, self.flag.ckpt_name,'weights.{epoch:03d}.h5'), 
-                    period=self.flag.total_epoch//10+1)
+                    period=self.flag.total_epoch//10)
         learning_rate = LearningRateScheduler(self.lr_step_decay)
         model.fit_generator(
             self.train_generator(image_generator, mask_generator),

@@ -22,7 +22,7 @@ def pixelwise_binary_ce(y_true, y_pred):
     y_true /= 255.
     y_true_f = K.flatten(y_true)
     y_pred_f = K.flatten(y_pred)
-    return K.mean(K.binary_crossentropy(y_pred, y_true))
+    return K.mean(K.binary_crossentropy(y_true_f, y_pred_f))
 
 def get_unet(flag):
     img_rows = flag.image_height
@@ -100,10 +100,19 @@ def get_unet(flag):
     conv9 = BatchNormalization()(conv9)
     conv9 = Activation('relu')(conv9)
     
-    conv10 = Conv2D(1, (1, 1), activation='sigmoid')(conv9)
+    conv10 = Conv2D(3, (1, 1), activation='sigmoid')(conv9)
 
     model = Model(inputs=[inputs], outputs=[conv10])
 
     model.compile(optimizer=Adam(lr=lr, decay=1e-6), loss=pixelwise_binary_ce, metrics=[dice_coef])
 
     return model
+
+if __name__ == "__main__":
+    class structure:
+        image_width = 512
+        image_height = 256
+        initial_learning_rate = 0.007
+    flag = structure()
+    model = get_unet(flag)
+    model.summary()
