@@ -1,8 +1,7 @@
 import h5py
 import numpy as np
 import random
-import time
-import cv2
+
 from keras.preprocessing.image import ImageDataGenerator
 
 data = h5py.File('data.h5', 'r')

@@ -93,4 +93,23 @@ def make_h5py():
     print('Finish.')
 
 
-make_h5py()
+# Make_h5py_2 combines train data and test data.
+def make_h5py_2():
+    x_train_paths, y_train_paths = get_data('train')
+    x_val_paths, y_val_paths = get_data('val')
+    x_test_paths, y_test_paths = get_data('test')
+
+    # Make h5py file with write option.
+    h5py_file = h5py.File(os.path.join(dir_path, 'data.h5'), 'w')
+
+    # Write data
+    print('Parsing train and test datas...')
+    write_data(h5py_file, 'train', x_train_paths + x_test_paths, y_train_paths + y_test_paths)
+    print('Finish.')
+
+    print('Parsing val datas...')
+    write_data(h5py_file, 'val', x_val_paths, y_val_paths)
+    print('Finish.')
+
+
+make_h5py_2()
