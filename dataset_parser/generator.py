@@ -1,24 +1,35 @@
 import h5py
 import numpy as np
 import random
+import cv2
 
 from keras.preprocessing.image import ImageDataGenerator
-
-data = h5py.File('data.h5', 'r')
 
 # Use only 3 classes.
 # labels = ['background', 'person', 'car', 'road']
 
 
-# Centering method helps normalization image (-1 ~ 1)
-def centering(np_image):
-    return 2 * (np_image - 128)
+def pre_processing(img):
+    # Random exposure and saturation (0.5 ~ 1.5 scale)
+    rand_s = random.uniform(0.5, 1.5)
+    rand_v = random.uniform(0.5, 1.5)
+
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+
+    tmp = np.ones_like(img[:, :, 1]) * 255
+    img[:, :, 1] = np.where(img[:, :, 1] * rand_s > 255, tmp, img[:, :, 1] * rand_s)
+    img[:, :, 2] = np.where(img[:, :, 2] * rand_v > 255, tmp, img[:, :, 2] * rand_v)
+
+    img = cv2.cvtColor(img, cv2.COLOR_HSV2BGR)
+
+    # Centering helps normalization image (-1 ~ 1 value)
+    return 2 * (img - 128)
 
 
 # Get ImageDataGenerator arguments(options) depends on mode - (train, val, test)
 def get_data_gen_args(mode):
     if mode == 'train' or mode == 'val':
-        x_data_gen_args = dict(preprocessing_function=centering,
+        x_data_gen_args = dict(preprocessing_function=pre_processing,
                                rescale=1./255,
                                shear_range=0.1,
                                zoom_range=0.1,
@@ -65,7 +76,8 @@ def get_result_map(b_size, y_img):
 
 
 # Data generator for fit_generator.
-def data_generator(b_size, mode):
+def data_generator(d_path, b_size, mode):
+    data = h5py.File(d_path, 'r')
     x_imgs = data.get('/' + mode + '/x')
     y_imgs = data.get('/' + mode + '/y')
 
