@@ -14,6 +14,7 @@ import random
 import math
 
 from model import get_unet
+from fcn import get_fcn8
 import callbacks
 
 class TrainModel:
@@ -111,7 +112,9 @@ class TrainModel:
         config.gpu_options.allow_growth = True
         set_session(tf.Session(config=config))
 
-        model = get_unet(self.flag)
+        # model = get_unet(self.flag)
+        model = get_fcn8(self.flag)
+        
         if self.flag.pretrained_weight_path != None:
             model.load_weights(self.flag.pretrained_weight_path)
         
