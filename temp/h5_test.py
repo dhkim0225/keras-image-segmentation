@@ -119,15 +119,19 @@ def h5py_test():
     h5_image = h5_in['train']['image'] #.get('/train/image')
     h5_label = h5_in['train']['label'] #.get('/train/label')
 
-    shuffle_indexes = shuffle(range(len(h5_image)))
+    shuffle_indexes = np.array(shuffle(range(len(h5_image))))
 
     batch_size = 32
+
+    print (len(h5_image))
+    print (len(shuffle_indexes))
+    print (len(shuffle_indexes)//batch_size)
 
     image_size = h5_in['train']['image'].attrs['size']
     label_size = h5_in['train']['label'].attrs['size']
 
-    reshape_image_size = tuple(np.insert(image_size, 0, len(h5_image[:])))
-    reshape_label_size = tuple(np.insert(label_size, 0, len(h5_label[:])))
+    # reshape_image_size = tuple(np.insert(image_size, 0, len(h5_image)))
+    # reshape_label_size = tuple(np.insert(label_size, 0, len(h5_label)))
 
     # print(h5_image[0:10].astype(type(h5_image[0])).dtype)
     
@@ -136,6 +140,9 @@ def h5py_test():
     print ('dtype:',h5_image[:10].dtype)
     print ('type of element:',type(h5_image[:10][0]))
     
+    # for idx in range(len(shuffle_indexes)//batch_size):
+    #     x_img = np.array(h5_image[shuffle_indexes[idx:idx+batch_size]].tolist())
+
     exit()
 
     # faster than reading image files
@@ -238,5 +245,5 @@ def image_collection():
 if __name__=='__main__':
     # make_h5py() # cityscape -> 2.5GB h5 file
     # read_h5py_example()
-    # h5py_test()
-    image_collection()
+    h5py_test()
+    # image_collection()
