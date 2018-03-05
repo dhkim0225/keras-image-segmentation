@@ -45,9 +45,9 @@ def main():
     elif flag.mode == 'predict_img':
         predict_image(flag)
     elif flag.mode == 'predict_imgDir':
-        print 'not supported'
+        print ('not supported')
     else:
-        print 'not supported'
+        print ('not supported')
 
 if __name__ == '__main__':
     main()

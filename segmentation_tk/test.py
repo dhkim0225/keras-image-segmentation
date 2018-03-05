@@ -1,3 +1,4 @@
+from __future__ import print_function
 from keras.models import Model
 from keras.callbacks import ModelCheckpoint
 from keras.backend.tensorflow_backend import set_session
@@ -22,28 +23,38 @@ def predict_image(flag):
     model = model_from_json(loaded_model_json)
     weight_list = sorted(glob(os.path.join(flag.ckpt_dir, flag.ckpt_name, "weight*")))
     model.load_weights(weight_list[-1])
-    print "[*] model load : %s"%weight_list[-1]
+    print ("[*] model load : %s"%weight_list[-1])
     t_total = (cv2.getTickCount() - t_start) / cv2.getTickFrequency() * 1000 
-    print "[*] model loading Time: %.3f ms"%t_total
+    print ("[*] model loading Time: %.3f ms"%t_total)
 
-    imgInput = cv2.imread(flag.test_image_path, 0)
-    input_data = imgInput.reshape((1,256,256,1))
+    imgInput = cv2.imread(flag.test_image_path, 1)
+    imgInput = cv2.cvtColor(imgInput, cv2.COLOR_BGR2RGB)
+    input_data = imgInput.reshape((1,256,512,3)).astype(np.float32)
 
     t_start = cv2.getTickCount()
     result = model.predict(input_data, 1)
     t_total = (cv2.getTickCount() - t_start) / cv2.getTickFrequency() * 1000
-    print "Predict Time: %.3f ms"%t_total
+    print ("Predict Time: %.3f ms"%t_total)
     
     imgMask = (result[0]*255).astype(np.uint8)
-    imgShow = cv2.cvtColor(imgInput, cv2.COLOR_GRAY2BGR)
-    _, imgMask = cv2.threshold(imgMask, int(255*flag.confidence_value), 255, cv2.THRESH_BINARY)
-    imgMaskColor = cv2.applyColorMap(imgMask, cv2.COLORMAP_JET)
+    # print (imgMask.shape)
+    # print (imgInput.dtype)
+    imgShow = cv2.cvtColor(imgInput, cv2.COLOR_RGB2BGR)
+    # _, imgMask = cv2.threshold(imgMask, int(255*flag.confidence_value), 255, cv2.THRESH_BINARY)
+    
+    # imgMaskColor = cv2.applyColorMap(imgMask, cv2.COLORMAP_JET)
+    imgMaskColor = imgMask
     # imgZero = np.zeros((256,256), np.uint8)
     # imgMaskColor = cv2.merge((imgZero, imgMask, imgMask))
-    imgShow = cv2.addWeighted(imgShow, 0.9, imgMaskColor, 0.3, 0.0)
-    output_path = os.path.join(flag.output_dir, os.path.basename(flag.test_image_path))
-    cv2.imwrite(output_path, imgShow)
-    print "SAVE:[%s]"%output_path
+    imgShow = cv2.addWeighted(imgShow, 0.5, imgMaskColor, 0.5, 0.0)
+
+    cv2.imshow('show', imgShow)
+    key = cv2.waitKey()
+    if key == 27:
+        exit()
+    # output_path = os.path.join(flag.output_dir, os.path.basename(flag.test_image_path))
+    # cv2.imwrite(output_path, imgShow)
+    # print "SAVE:[%s]"%output_path
         
 
     
