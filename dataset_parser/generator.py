@@ -46,7 +46,7 @@ def get_data_gen_args(mode):
                                horizontal_flip=True)
 
     elif mode == 'test':
-        x_data_gen_args = dict(preprocessing_function=centering, rescale=1./255)
+        x_data_gen_args = dict(preprocessing_function=pre_processing, rescale=1./255)
         y_data_gen_args = dict()
 
     else:
