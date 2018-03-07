@@ -82,7 +82,7 @@ def unet(num_classes, init_lr, input_shape, vgg_weight_path=None):
     # Load pretrained weights.
     if vgg_weight_path is not None:
         vgg16 = Model(img_input, for_pretrained_weight)
-        vgg16.load_weights(vgg_weight_path)
+        vgg16.load_weights(vgg_weight_path, by_name=True)
 
     # UP 1
     x = Conv2DTranspose(512, (2, 2), strides=(2, 2), padding='same')(x)

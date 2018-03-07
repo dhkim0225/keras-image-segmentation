@@ -11,8 +11,8 @@ from dataset_parser.generator import data_generator
 # Use only 3 classes.
 labels = ['background', 'person', 'car', 'road']
 
-#model = unet(input_shape=(256, 512, 3), num_classes=len(labels), init_lr=1e-3, vgg_weight_path="../vgg16_notop.h5")
-model = fcn_8s(input_shape=(256, 512, 3), num_classes=len(labels), init_lr=1e-3, vgg_weight_path="../vgg16_notop.h5")
+model = unet(input_shape=(256, 512, 3), num_classes=len(labels), init_lr=1e-3, vgg_weight_path="../vgg16_notop.h5")
+#model = fcn_8s(input_shape=(256, 512, 3), num_classes=len(labels), init_lr=1e-3, vgg_weight_path="../vgg16_notop.h5")
 
 model.summary()
 
