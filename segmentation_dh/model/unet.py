@@ -141,10 +141,8 @@ def unet(num_classes, init_lr, input_shape, vgg_weight_path=None):
     x = Activation('relu')(x)
 
     # last conv
-    x = Conv2D(num_classes, (3, 3), padding='same')(x)
-    x = BatchNormalization()(x)
-    x = Activation('relu')(x)
+    x = Conv2D(num_classes, (3, 3), activation='softmax', padding='same')(x)
 
     model = Model(img_input, x)
-    model.compile(optimizer=Adam(lr=init_lr, decay=5e-4), loss='categorical_crossentropy', metrics=[dice_coef])
+    model.compile(optimizer=Adam(lr=init_lr, decay=1e-3), loss='categorical_crossentropy', metrics=[dice_coef])
     return model

@@ -11,8 +11,8 @@ from keras.preprocessing.image import ImageDataGenerator
 
 def pre_processing(img):
     # Random exposure and saturation (0.5 ~ 1.5 scale)
-    rand_s = random.uniform(0.5, 1.5)
-    rand_v = random.uniform(0.5, 1.5)
+    rand_s = random.uniform(0.8, 1.2)
+    rand_v = random.uniform(0.8, 1.2)
 
     img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
