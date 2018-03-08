@@ -23,14 +23,13 @@ def pre_processing(img):
     img = cv2.cvtColor(img, cv2.COLOR_HSV2BGR)
 
     # Centering helps normalization image (-1 ~ 1 value)
-    return 2 * (img - 127.5)
+    return img / 127.5 - 1
 
 
 # Get ImageDataGenerator arguments(options) depends on mode - (train, val, test)
 def get_data_gen_args(mode):
     if mode == 'train' or mode == 'val':
         x_data_gen_args = dict(preprocessing_function=pre_processing,
-                               rescale=1./255,
                                shear_range=0.1,
                                zoom_range=0.1,
                                rotation_range=10,
@@ -48,7 +47,7 @@ def get_data_gen_args(mode):
                                horizontal_flip=True)
 
     elif mode == 'test':
-        x_data_gen_args = dict(preprocessing_function=pre_processing, rescale=1./255)
+        x_data_gen_args = dict(preprocessing_function=pre_processing)
         y_data_gen_args = dict()
 
     else:
