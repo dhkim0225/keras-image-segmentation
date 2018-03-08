@@ -20,7 +20,7 @@ def pre_processing(img):
     img[:, :, 1] = np.where(img[:, :, 1] * rand_s > 255, tmp, img[:, :, 1] * rand_s)
     img[:, :, 2] = np.where(img[:, :, 2] * rand_v > 255, tmp, img[:, :, 2] * rand_v)
 
-    img = cv2.cvtColor(img, cv2.COLOR_HSV2BGR)
+    img = cv2.cvtColor(img, cv2.COLOR_HSV2RGB)
 
     # Centering helps normalization image (-1 ~ 1 value)
     return img / 127.5 - 1
