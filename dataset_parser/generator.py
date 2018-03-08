@@ -14,7 +14,7 @@ def pre_processing(img):
     rand_s = random.uniform(0.9, 1.1)
     rand_v = random.uniform(0.9, 1.1)
 
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    img = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
 
     tmp = np.ones_like(img[:, :, 1]) * 255
     img[:, :, 1] = np.where(img[:, :, 1] * rand_s > 255, tmp, img[:, :, 1] * rand_s)
