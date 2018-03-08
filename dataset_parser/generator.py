@@ -10,9 +10,9 @@ from keras.preprocessing.image import ImageDataGenerator
 
 
 def pre_processing(img):
-    # Random exposure and saturation (0.5 ~ 1.5 scale)
-    rand_s = random.uniform(0.8, 1.2)
-    rand_v = random.uniform(0.8, 1.2)
+    # Random exposure and saturation (0.9 ~ 1.1 scale)
+    rand_s = random.uniform(0.9, 1.1)
+    rand_v = random.uniform(0.9, 1.1)
 
     img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
@@ -23,7 +23,7 @@ def pre_processing(img):
     img = cv2.cvtColor(img, cv2.COLOR_HSV2BGR)
 
     # Centering helps normalization image (-1 ~ 1 value)
-    return 2 * (img - 128)
+    return 2 * (img - 127.5)
 
 
 # Get ImageDataGenerator arguments(options) depends on mode - (train, val, test)
@@ -36,6 +36,7 @@ def get_data_gen_args(mode):
                                rotation_range=10,
                                width_shift_range=0.1,
                                height_shift_range=0.1,
+                               fill_mode='constant',
                                horizontal_flip=True)
 
         y_data_gen_args = dict(shear_range=0.1,
@@ -43,6 +44,7 @@ def get_data_gen_args(mode):
                                rotation_range=10,
                                width_shift_range=0.1,
                                height_shift_range=0.1,
+                               fill_mode='constant',
                                horizontal_flip=True)
 
     elif mode == 'test':

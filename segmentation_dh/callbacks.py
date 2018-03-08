@@ -33,6 +33,7 @@ class TrainCheck(Callback):
         img = cv2.imread(path)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         img = np.expand_dims(img, 0)
+        img = img / 127.5 - 1
 
         pred = self.model.predict(img)
         res_img = self.result_map_to_img(pred[0])
