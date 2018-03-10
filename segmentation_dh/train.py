@@ -24,12 +24,12 @@ train_check = TrainCheck(output_path='./img')
 
 # training
 history = model.fit_generator(data_generator('../dataset_parser/data.h5', 4, 'train'),
-                              steps_per_epoch=(3475 // 4),
+                              steps_per_epoch=3475//4,
                               validation_data=data_generator('../dataset_parser/data.h5', 1, 'val'),
-                              validation_steps=(500 // 1),
+                              validation_steps=500//1,
                               callbacks=[checkpoint, train_check],
                               epochs=300,
-                              verbose=2)
+                              verbose=1)
 
 plt.title("loss")
 plt.plot(history.history["loss"], color="r", label="train")

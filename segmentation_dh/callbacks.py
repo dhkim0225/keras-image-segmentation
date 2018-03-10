@@ -1,5 +1,7 @@
 from __future__ import print_function
 from keras.callbacks import Callback
+from keras import backend as K
+
 import cv2
 import numpy as np
 import os
@@ -11,13 +13,15 @@ class TrainCheck(Callback):
         self.output_path = output_path
 
     def result_map_to_img(self, res_map):
-        img = np.zeros((256, 512, 3))
+        img = np.zeros((256, 512, 3), dtype=np.uint8)
         res_map = np.squeeze(res_map)
 
+        argmax_idx = np.argmax(res_map, axis=2)
+
         # For np.where calculation.
-        person = (res_map[:, :, 1] == 1)
-        car = (res_map[:, :, 2] == 1)
-        road = (res_map[:, :, 3] == 1)
+        person = (argmax_idx == 1)
+        car = (argmax_idx == 2)
+        road = (argmax_idx == 3)
 
         img[:, :, 0] = np.where(person, 255, 0)
         img[:, :, 1] = np.where(car, 255, 0)
