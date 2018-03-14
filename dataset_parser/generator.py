@@ -10,32 +10,32 @@ from keras.preprocessing.image import ImageDataGenerator
 
 
 def pre_processing(img):
-    # Random exposure and saturation (0.5 ~ 1.5 scale)
-    rand_s = random.uniform(0.5, 1.5)
-    rand_v = random.uniform(0.5, 1.5)
+    # Random exposure and saturation (0.9 ~ 1.1 scale)
+    rand_s = random.uniform(0.9, 1.1)
+    rand_v = random.uniform(0.9, 1.1)
 
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    img = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
 
     tmp = np.ones_like(img[:, :, 1]) * 255
     img[:, :, 1] = np.where(img[:, :, 1] * rand_s > 255, tmp, img[:, :, 1] * rand_s)
     img[:, :, 2] = np.where(img[:, :, 2] * rand_v > 255, tmp, img[:, :, 2] * rand_v)
 
-    img = cv2.cvtColor(img, cv2.COLOR_HSV2BGR)
+    img = cv2.cvtColor(img, cv2.COLOR_HSV2RGB)
 
     # Centering helps normalization image (-1 ~ 1 value)
-    return 2 * (img - 128)
+    return img / 127.5 - 1
 
 
 # Get ImageDataGenerator arguments(options) depends on mode - (train, val, test)
 def get_data_gen_args(mode):
     if mode == 'train' or mode == 'val':
         x_data_gen_args = dict(preprocessing_function=pre_processing,
-                               rescale=1./255,
                                shear_range=0.1,
                                zoom_range=0.1,
                                rotation_range=10,
                                width_shift_range=0.1,
                                height_shift_range=0.1,
+                               fill_mode='constant',
                                horizontal_flip=True)
 
         y_data_gen_args = dict(shear_range=0.1,
@@ -43,10 +43,11 @@ def get_data_gen_args(mode):
                                rotation_range=10,
                                width_shift_range=0.1,
                                height_shift_range=0.1,
+                               fill_mode='constant',
                                horizontal_flip=True)
 
     elif mode == 'test':
-        x_data_gen_args = dict(preprocessing_function=centering, rescale=1./255)
+        x_data_gen_args = dict(preprocessing_function=pre_processing)
         y_data_gen_args = dict()
 
     else:
