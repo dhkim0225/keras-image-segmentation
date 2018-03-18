@@ -8,17 +8,17 @@ Use pretrained VGG16 weight for FCN and U-net! You can
 [download weights](https://github.com/fchollet/deep-learning-models/releases/download/v0.1/vgg16_weights_tf_dim_ordering_tf_kernels_notop.h5)
 offered by keras.
 
-### Tested Env
+## Tested Env
 - python 2 & 3
 - tensorflow 1.5
 - keras 2.1.4
 - opencv 3.3
 
-### File Description
+## File Description
 | File | Description |
 |:------|:------------|
-| train.py | 
-| test.py | Just predict one picture 
+| train.py | Train various models. |
+| test.py | Predict one picture what you want. |
 | dataest_parser/make_h5.py | Parse cityscape dataset and make h5py file. |
 | dataest_parser/generator.py | Data_generator with augmentation using data.h5 |
 | model/ | Folder that contains various models for semantic segmentation |
@@ -26,11 +26,12 @@ offered by keras.
 | segmentation_tk/ | Experiment folder for TaeKang Woo(useless contents for users) |
 | temp/ | Folder that contains various scripts we used(useless contents for users) |
 
-### Implement Details
+## Implement Details
 We used only **three classes** in the [cityscape dataset](https://www.cityscapes-dataset.com/) for a simple implementation.
 
+Person, Car, and Road.
 
-### Simple Tutorial
+## Simple Tutorial
 **First**, you have to make .h5 file with data!
 ```bash
 python3 dataset_parser/make_h5.py --path "/downloaded/leftImg8bit/path/" --gtpath "/downloaded/gtFine/path/"
@@ -65,6 +66,7 @@ python3 test.py --model fcn
 - [x] PSPnet
 - [ ] DeepLab_v3
 - [ ] Mask_RCNN
+- [ ] Evauate methods(calc mIoU)
 
 ### Contact us!
 Anthony Kim: artit.anthony@gmail.com
