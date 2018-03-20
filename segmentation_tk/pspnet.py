@@ -595,6 +595,8 @@ def PSPNet50(
 
     return model
 
+
+
 if __name__ == '__main__':
     model = PSPNet50()
     # model.compile(optimizer='adam', loss='bce')
