@@ -21,7 +21,7 @@ parser.add_argument("-M", "--model", required=True, choices=['fcn', 'unet', 'psp
                     help="Model to train. 'fcn', 'unet', 'pspnet' is available.")
 parser.add_argument("-TB", "--train_batch", required=False, default=4, help="Batch size for train.")
 parser.add_argument("-VB", "--val_batch", required=False, default=1, help="Batch size for validation.")
-parser.add_argument("-LI", "--lr_init", required=False, default=1e-3, help="Initial learning rate.")
+parser.add_argument("-LI", "--lr_init", required=False, default=1e-4, help="Initial learning rate.")
 parser.add_argument("-LD", "--lr_decay", required=False, default=5e-4, help="How much to decay the learning rate.")
 parser.add_argument("--vgg", required=False, default=None, help="Pretrained vgg16 weight path.")
 
@@ -52,7 +52,7 @@ checkpoint = ModelCheckpoint(filepath=model_name + '_model_weight.h5',
                              save_best_only=True,
                              save_weights_only=True)
 train_check = TrainCheck(output_path='./img', model_name=model_name)
-early_stopping = EarlyStopping(monitor='val_dice_coef', patience=10)
+#early_stopping = EarlyStopping(monitor='val_dice_coef', patience=10)
 
 # training
 history = model.fit_generator(data_generator('dataset_parser/data.h5', TRAIN_BATCH, 'train'),
@@ -60,7 +60,7 @@ history = model.fit_generator(data_generator('dataset_parser/data.h5', TRAIN_BAT
                               validation_data=data_generator('dataset_parser/data.h5', VAL_BATCH, 'val'),
                               validation_steps=500 // VAL_BATCH,
                               callbacks=[checkpoint, train_check],
-                              epochs=300,
+                              epochs=100,
                               verbose=1)
 
 plt.title("loss")
@@ -69,6 +69,7 @@ plt.plot(history.history["val_loss"], color="b", label="val")
 plt.legend(loc="best")
 plt.savefig(model_name + '_loss.png')
 
+plt.gcf().clear()
 plt.title("dice_coef")
 plt.plot(history.history["dice_coef"], color="r", label="train")
 plt.plot(history.history["val_dice_coef"], color="b", label="val")

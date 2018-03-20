@@ -1,6 +1,5 @@
 from __future__ import print_function
 from keras.callbacks import Callback
-from keras import backend as K
 
 import cv2
 import numpy as np
