@@ -8,6 +8,8 @@ from keras.layers.normalization import BatchNormalization
 from keras.optimizers import Adam
 from keras import backend as K
 
+import tensorflow as tf
+
 
 def dice_coef(y_true, y_pred):
     return (2. * K.sum(y_true * y_pred) + 1.) / (K.sum(y_true) + K.sum(y_pred) + 1.)
@@ -106,15 +108,15 @@ def fcn_8s(num_classes, input_shape, lr_init, lr_decay, vgg_weight_path=None):
     block_4_out = Conv2D(num_classes, (1, 1), strides=(1, 1), activation='linear')(block_4_out)
     block_4_out = BatchNormalization()(block_4_out)
 
-    x = Lambda(lambda x: K.resize_images(x, x.shape[1] * 2, x.shape[2] * 2, "channels_last"))(x)
+    x = Lambda(lambda x: tf.image.resize_images(x, (x.shape[1] * 2, x.shape[2] * 2)))(x)
     x = Add()([x, block_4_out])
     x = Activation('relu')(x)
 
-    x = Lambda(lambda x: K.resize_images(x, x.shape[1] * 2, x.shape[2] * 2, "channels_last"))(x)
+    x = Lambda(lambda x: tf.image.resize_images(x, (x.shape[1] * 2, x.shape[2] * 2)))(x)
     x = Add()([x, block_3_out])
     x = Activation('relu')(x)
 
-    x = Lambda(lambda x: K.resize_images(x, x.shape[1] * 8, x.shape[2] * 8, "channels_last"))(x)
+    x = Lambda(lambda x: tf.image.resize_images(x, (x.shape[1] * 8, x.shape[2] * 8)))(x)
 
     x = Activation('softmax')(x)
 
