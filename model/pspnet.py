@@ -6,13 +6,10 @@ from keras.layers.core import Activation, Dropout, Lambda
 from keras.layers.normalization import BatchNormalization
 from keras.layers.merge import add, concatenate
 from keras.optimizers import Adam
-from keras import backend as K
 
 import tensorflow as tf
 
-
-def dice_coef(y_true, y_pred):
-    return (2. * K.sum(y_true * y_pred) + 1.) / (K.sum(y_true) + K.sum(y_pred) + 1.)
+from model.metrics import dice_coef, m_iou, precision, recall
 
 
 def conv_block(input_tensor, filters, strides, d_rates):
@@ -120,6 +117,6 @@ def pspnet50(num_classes, input_shape, lr_init, lr_decay):
     model = Model(img_input, x)
     model.compile(optimizer=Adam(lr=lr_init, decay=lr_decay),
                   loss='categorical_crossentropy',
-                  metrics=[dice_coef])
+                  metrics=[dice_coef, m_iou, precision, recall])
 
     return model

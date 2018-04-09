@@ -6,13 +6,10 @@ from keras.layers.pooling import MaxPooling2D
 from keras.layers.merge import Add
 from keras.layers.normalization import BatchNormalization
 from keras.optimizers import Adam
-from keras import backend as K
 
 import tensorflow as tf
 
-
-def dice_coef(y_true, y_pred):
-    return (2. * K.sum(y_true * y_pred) + 1.) / (K.sum(y_true) + K.sum(y_pred) + 1.)
+from model.metrics import dice_coef, m_iou, precision, recall
 
 
 def fcn_8s(num_classes, input_shape, lr_init, lr_decay, vgg_weight_path=None):
@@ -123,6 +120,6 @@ def fcn_8s(num_classes, input_shape, lr_init, lr_decay, vgg_weight_path=None):
     model = Model(img_input, x)
     model.compile(optimizer=Adam(lr=lr_init, decay=lr_decay),
                   loss='categorical_crossentropy',
-                  metrics=[dice_coef])
+                  metrics=[dice_coef, m_iou, precision, recall])
 
     return model

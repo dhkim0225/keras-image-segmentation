@@ -10,15 +10,15 @@ import argparse
 dir_path = os.path.dirname(os.path.realpath('__file__'))
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--path", required=True, help="path of leftImg8bit folder.")
-parser.add_argument("--gtpath", required=True, help="path of gtFine folder.")
+parser.add_argument("-P", "--path", required=True, help="path of leftImg8bit folder.")
+parser.add_argument("-GP", "--gtpath", required=True, help="path of gtFine folder.")
+parser.add_argument("-S", "--scale", required=False, default=0.25, choices=[0.25, 0.5, 0.75, 1],
+                    help="scale of the image. ex> 0.25 --> scale down image to 1/4")
 
 args = parser.parse_args()
 img_folder_path = args.path
 gt_folder_path = args.gtpath
-
-# Use only 3 classes.
-# labels = ['background', 'person', 'car', 'road']
+scale_size = float(args.scale)
 
 
 # Reads paths from cityscape data.
@@ -59,11 +59,11 @@ def write_data(h5py_file, mode, x_paths, y_paths):
     for i in range(num_data):
         # Read image and resize
         x_img = cv2.imread(x_paths[i])
-        x_img = cv2.resize(x_img, None, fx=0.25, fy=0.25, interpolation=cv2.INTER_CUBIC)
+        x_img = cv2.resize(x_img, None, fx=scale_size, fy=scale_size, interpolation=cv2.INTER_CUBIC)
         x_img = cv2.cvtColor(x_img, cv2.COLOR_BGR2RGB)
 
         y_img = cv2.imread(y_paths[i])
-        y_img = cv2.resize(y_img, None, fx=0.25, fy=0.25, interpolation=cv2.INTER_NEAREST)
+        y_img = cv2.resize(y_img, None, fx=scale_size, fy=scale_size, interpolation=cv2.INTER_NEAREST)
         y_img = y_img[:, :, 0]
 
         x_dset[i] = x_img.flatten()
