@@ -88,7 +88,8 @@ python3 test.py --model fcn
 |:-----:|:---------:|:----:|:---------:|:------:|
 | FCN_8s | 0.86 | 0.84 | 0.93 | 0.88 |
 
-![](fcn_epoch_100.png)
+![fcn_8s_epoch100](img/fcn_epoch_100.png)
+*fcn_8s 100_epoch*
 
 ## Todo
 - [x] FCN
