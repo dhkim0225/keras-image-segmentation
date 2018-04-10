@@ -68,6 +68,7 @@ except:
     print("You must train model and get weight before test.")
 
 img = cv2.imread(img_path)
+img = cv2.resize(img, )
 x_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 x_img = x_img / 127.5 - 1
 x_img = np.expand_dims(x_img, 0)

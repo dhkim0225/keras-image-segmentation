@@ -84,6 +84,11 @@ python3 test.py --model fcn
 | --img_path | The image path you want to test |
 
 ## Result of scale_down(1/4) cityscape dataset.
+| model | dice_coef | mIoU | precision | recall |
+|:-----:|:---------:|:----:|:---------:|:------:|
+| FCN_8s | 0.86 | 0.84 | 0.93 | 0.88 |
+
+![](fcn_epoch_100.png)
 
 ## Todo
 - [x] FCN
