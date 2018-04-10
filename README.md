@@ -48,11 +48,6 @@ After you change the number of classes, you also have to give same num_classes t
 ```bash
 python3 dataset_parser/make_h5.py --path "/downloaded/leftImg8bit/path/" --gtpath "/downloaded/gtFine/path/"
 ```
-| Option | Description | Required | Default |
-|:-------|:------------|:--------:|:-------:|
-| --path | Downloaded leftImg8bit folder path. | O | - |
-| --gtpath | Downloaded gtFine path. | O | - |
-| --scale | Scale size of image. | X | 0.25 |
 
 After you run above command, 'data.h5' file will appear in folder.
 
@@ -65,6 +60,20 @@ python3 train.py --model fcn
 
 After the second step, tested image_files while you training will appear in img folder.
 
+**Finally**, test your model!
+```bash
+python3 test.py --model fcn
+```
+
+## File_Option Description
+##### make_h5.py
+| Option | Description | Required | Default |
+|:-------|:------------|:--------:|:-------:|
+| --path | Downloaded leftImg8bit folder path. | O | - |
+| --gtpath | Downloaded gtFine path. | O | - |
+| --scale | Scale size of image. | X | 0.25 |
+
+##### train.py
 | Option | Description | Required | Default |
 |:-------|:------------|:--------:|:-------:|
 | --model | Model to train. \['fcn', 'unet', 'pspnet', 'deeplab'\] | O | - |
@@ -76,10 +85,7 @@ After the second step, tested image_files while you training will appear in img 
 | --lr_decay | How much to decay the learning rate. | X | 5e-4 |
 | --vgg | Pretrained vgg16 weight path. | X | None |
 
-**Finally**, test your model!
-```bash
-python3 test.py --model fcn
-```
+##### test.py
 | Option | Description | Required | Default |
 |:-------|:------------|:--------:|:-------:|
 | --model | Model to test. \['fcn', 'unet', 'pspnet'\] | O | - |
@@ -99,7 +105,7 @@ python3 test.py --model fcn
 |:-----------------------------------------:|:-----------------------------------------:|
 | *fcn_8s 100_epoch* | *unet 100_epoch* |
 | ![fcn_8s_epoch100](img/fcn_epoch_100.png) | ![fcn_8s_epoch100](img/fcn_epoch_100.png) |
-| *pspnet 100_epoch* | *deeplab_v3 100_epoch* |
+| *pspnet 100_epoch* | *deeplab_v3+ 100_epoch* |
 
 ## Todo
 - [x] FCN
