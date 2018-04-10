@@ -48,11 +48,11 @@ After you change the number of classes, you also have to give same num_classes t
 ```bash
 python3 dataset_parser/make_h5.py --path "/downloaded/leftImg8bit/path/" --gtpath "/downloaded/gtFine/path/"
 ```
-| Option | Description |
-|:-------|:------------|
-| --path | Downloaded leftImg8bit folder path. |
-| --gtpath | Downloaded gtFine path. |
-| --scale | Scale size of image. Default=0.25 |
+| Option | Description | Required | Default |
+|:-------|:------------|:--------:|:-------:|
+| --path | Downloaded leftImg8bit folder path. | O | - |
+| --gtpath | Downloaded gtFine path. | O | - |
+| --scale | Scale size of image. | X | 0.25 |
 
 After you run above command, 'data.h5' file will appear in folder.
 
@@ -65,23 +65,27 @@ python3 train.py --model fcn
 
 After the second step, tested image_files while you training will appear in img folder.
 
-| Option | Description |
-|:-------|:------------|
-| --model | Model to train. \['fcn', 'unet', 'pspnet', 'deeplab'\] |
-| --train_batch | Batch size for train. |
-| --val_batch | Batch size for validation. |
-| --lr_init | Initial learning rate. |
-| --lr_decay | How much to decay the learning rate. |
-| --vgg | Pretrained vgg16 weight path. |
+| Option | Description | Required | Default |
+|:-------|:------------|:--------:|:-------:|
+| --model | Model to train. \['fcn', 'unet', 'pspnet', 'deeplab'\] | O | - |
+| --scale | Scale size of image | X | 0.25 |
+| --num_classes | number of classes | X | 8 |
+| --train_batch | Batch size for train. | X | 4 |
+| --val_batch | Batch size for validation. | X | 1 |
+| --lr_init | Initial learning rate. | X | 1e-4 |
+| --lr_decay | How much to decay the learning rate. | X | 5e-4 |
+| --vgg | Pretrained vgg16 weight path. | X | None |
 
 **Finally**, test your model!
 ```bash
 python3 test.py --model fcn
 ```
-| Option | Description |
-|:-------|:------------|
-| --model | Model to test. \['fcn', 'unet', 'pspnet'\] |
-| --img_path | The image path you want to test |
+| Option | Description | Required | Default |
+|:-------|:------------|:--------:|:-------:|
+| --model | Model to test. \['fcn', 'unet', 'pspnet'\] | O | - |
+| --img_path | The image path you want to test | X | 'img/test.png' |
+| --scale | Scale size of image | X | 0.25 |
+| --num_classes | number of classes | X | 8 |
 
 ## Result of scale_down(1/4) cityscape dataset.
 | model | dice_coef | mIoU | precision | recall |
@@ -91,22 +95,11 @@ python3 test.py --model fcn
 | PSPnet | 0 | 0 | 0 | 0 |
 | deeplab_v3+ | 0 | 0 | 0 | 0 |
 
-
-| ![fcn_8s_epoch100](img/fcn_epoch_100.png) | 
-|:-----------------------------------------:|
-| *fcn_8s 100_epoch* |
-
-| ![fcn_8s_epoch100](img/fcn_epoch_100.png) | 
-|:-----------------------------------------:|
-| *unet 100_epoch* |
-
-| ![fcn_8s_epoch100](img/fcn_epoch_100.png) | 
-|:-----------------------------------------:|
-| *pspnet 100_epoch* |
-
-| ![fcn_8s_epoch100](img/fcn_epoch_100.png) | 
-|:-----------------------------------------:|
-| *deeplab_v3+ 100_epoch* |
+| ![fcn_8s_epoch100](img/fcn_epoch_100.png) | ![fcn_8s_epoch100](img/fcn_epoch_100.png) |
+|:-----------------------------------------:|:-----------------------------------------:|
+| *fcn_8s 100_epoch* | *unet 100_epoch* |
+| ![fcn_8s_epoch100](img/fcn_epoch_100.png) | ![fcn_8s_epoch100](img/fcn_epoch_100.png) |
+| *pspnet 100_epoch* | *deeplab_v3 100_epoch* |
 
 ## Todo
 - [x] FCN

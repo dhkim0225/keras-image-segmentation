@@ -34,7 +34,7 @@ def result_map_to_img(res_map, num_classes, height, width):
 parser = argparse.ArgumentParser()
 parser.add_argument("-M", "--model", required=True, choices=['fcn', 'unet', 'pspnet', 'deeplab'],
                     help="Model to train. 'fcn', 'unet', 'pspnet', 'deeplab' is available.")
-parser.add_argument("-P", "--img_path", required=True, help="The image path you want to test")
+parser.add_argument("-P", "--img_path", required=False, default='img/test.png', help="The image path you want to test")
 parser.add_argument("-S", "--scale", required=False, default=0.25, choices=[0.25, 0.5, 0.75, 1],
                     help="Scale of the image. You should use the same value as the rate you set in make_h5.py.")
 parser.add_argument("-NC", "--num_classes", required=False, default=8, choices=[4, 8], help="Number of classes.")
