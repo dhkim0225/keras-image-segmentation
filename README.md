@@ -87,9 +87,26 @@ python3 test.py --model fcn
 | model | dice_coef | mIoU | precision | recall |
 |:-----:|:---------:|:----:|:---------:|:------:|
 | FCN_8s | 0.86 | 0.84 | 0.93 | 0.88 |
+| Unet | 0 | 0 | 0 | 0 |
+| PSPnet | 0 | 0 | 0 | 0 |
+| deeplab_v3+ | 0 | 0 | 0 | 0 |
 
-![fcn_8s_epoch100](img/fcn_epoch_100.png)
-*fcn_8s 100_epoch*
+
+| ![fcn_8s_epoch100](img/fcn_epoch_100.png) | 
+|:-----------------------------------------:|
+| *fcn_8s 100_epoch* |
+
+| ![fcn_8s_epoch100](img/fcn_epoch_100.png) | 
+|:-----------------------------------------:|
+| *unet 100_epoch* |
+
+| ![fcn_8s_epoch100](img/fcn_epoch_100.png) | 
+|:-----------------------------------------:|
+| *pspnet 100_epoch* |
+
+| ![fcn_8s_epoch100](img/fcn_epoch_100.png) | 
+|:-----------------------------------------:|
+| *deeplab_v3+ 100_epoch* |
 
 ## Todo
 - [x] FCN
