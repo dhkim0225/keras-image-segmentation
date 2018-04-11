@@ -58,9 +58,9 @@ def predict_image(flag):
         
 def demo(flag):
 
-    vc = cv2.VideoCapture('./demo/stuttgart_00.mp4')
-    fourcc = cv2.VideoWriter_fourcc(*'x264')
-    vw_name = './demo/result_stuttgart_00.mp4'
+    vc = cv2.VideoCapture('./demo/stuttgart_02.mp4')
+    fourcc = cv2.VideoWriter_fourcc(*'avc1')
+    vw_name = './demo/result_stuttgart_02.mp4'
     vw = cv2.VideoWriter(vw_name, fourcc, 30.0, (512, 256))
 
     t_start = cv2.getTickCount()
