@@ -2,6 +2,12 @@
 
 Semantic Segmentation easy code for keras users.
 
+
+<p align="center">
+    <img src='./img/demo.gif'>
+</p>
+<br>
+
 We use [cityscape dataset](https://www.cityscapes-dataset.com/) for training various models.
 
 Use pretrained VGG16 weight for FCN and U-net! You can 
